@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - mysql
+    networks:
+      - instagram_backend
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: instagram
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: instagram
+      MYSQL_PASSWORD: instagram
+    ports:
+      - "3307:3306"
+    volumes:
+      - instagram_mysql_data:/var/lib/mysql
+    networks:
+      - instagram_backend
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: instagram
+      PMA_PASSWORD: instagram
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - instagram_backend
+
+networks:
+  instagram_backend:
+
+volumes:
+  instagram_mysql_data:
