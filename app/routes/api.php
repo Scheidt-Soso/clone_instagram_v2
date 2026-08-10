@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\StoryController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,4 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/{post}/images/{imageId}', [PostController::class, 'destroyImage']);
     Route::post('/posts/{post}/archive', [PostController::class, 'archive']);
     Route::post('/posts/{post}/unarchive', [PostController::class, 'unarchive']);
+
+    // Stories
+    Route::get('/stories', [StoryController::class, 'index']);
+    Route::post('/stories', [StoryController::class, 'store']);
+    Route::delete('/stories/{story}', [StoryController::class, 'destroy']);
 });
