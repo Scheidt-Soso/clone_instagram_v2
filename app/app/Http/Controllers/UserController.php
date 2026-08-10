@@ -52,4 +52,17 @@ class UserController extends Controller
 
         return response()->json($users);
     }
+
+    public function destroy(Request $request, User $user)
+    {
+        if ($request->user()->id !== $user->id) {
+            return response()->json(['message' => 'Você só pode excluir a própria conta.'], 403);
+        }
+
+        $user->delete();
+
+        return response()->json(['message' => 'Conta excluída com sucesso.']);
+    }
+
+
 }
