@@ -6,9 +6,18 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+ARG UID=1000
+ARG GID=1000
+
+RUN groupadd -g $GID appuser && useradd -u $UID -g $GID -m appuser
+
 WORKDIR /var/www
 
 COPY . .
+
+RUN chown -R appuser:appuser /var/www
+
+USER appuser
 
 RUN composer install
 
