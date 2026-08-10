@@ -64,5 +64,8 @@ class UserController extends Controller
         return response()->json(['message' => 'Conta excluída com sucesso.']);
     }
 
-
+public function posts()
+{
+    return $this->hasMany(Post::class);
+}
 }
