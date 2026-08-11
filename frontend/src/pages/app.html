@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Instagram Clone</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/feed.css">
+  <link rel="stylesheet" href="../css/profile.css">
+  <link rel="stylesheet" href="../css/edit-profile.css">
+  <link rel="stylesheet" href="../css/app.css">
+</head>
+<body class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">Instagram</div>
+    <nav class="sidebar-nav">
+      <a href="#/home" class="sidebar-item" data-route="home">🏠 <span>Home</span></a>
+      <a href="#/profile" class="sidebar-item" data-route="profile">👤 <span>Profile</span></a>
+    </nav>
+    <button class="sidebar-item logout-btn" id="logoutBtn">🚪 <span>Sair</span></button>
+  </aside>
+
+  <main class="main-area">
+    <div id="app-content"></div>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/stories.js"></script>
+  <script src="../js/home.js"></script>
+  <script src="../js/profile.js"></script>
+  <script src="../js/edit-profile.js"></script>
+  <script src="../js/post.js"></script>
+  <script src="../js/router.js"></script>
+  <script>
+    registerRoute('home', renderHome);
+    registerRoute('profile', renderProfile);
+    registerRoute('profile/:id', renderProfile);
+    registerRoute('edit-profile', renderEditProfile);
+    registerRoute('post/:id', renderPost);
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('current_user');
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

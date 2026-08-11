@@ -29,7 +29,7 @@ if (loginForm) {
 
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('current_user', JSON.stringify(data.user));
-      window.location.href = 'home.html';
+      window.location.href = '../pages/app.html';
     } catch (err) {
       showError(err.data?.message || 'Erro ao fazer login.');
     } finally {
@@ -58,7 +58,7 @@ if (registerForm) {
 
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('current_user', JSON.stringify(data.user));
-      window.location.href = 'home.html';
+      window.location.href = '../pages/app.html';
     } catch (err) {
       if (err.data?.errors) {
         const firstError = Object.values(err.data.errors)[0][0];
