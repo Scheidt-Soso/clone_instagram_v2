@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DomainException;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Services\CommentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
 {
+    public function __construct(protected CommentService $commentService) {}
+
     public function index(Post $post)
     {
-        return response()->json(
-            $post->comments()->with('user')->get()
-        );
+        return response()->json($this->commentService->list($post));
     }
 
     public function store(Request $request, Post $post)
@@ -26,25 +28,18 @@ class CommentController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $comment = $post->comments()->create([
-            'user_id' => $request->user()->id,
-            'body' => $request->input('body'),
-        ]);
-
-        $comment->load('user');
+        $comment = $this->commentService->create($request->user(), $post, $request->input('body'));
 
         return response()->json($comment, 201);
     }
 
     public function destroy(Request $request, Post $post, Comment $comment)
     {
-        $userId = $request->user()->id;
-
-        if ($userId !== $comment->user_id && $userId !== $post->user_id) {
-            return response()->json(['message' => 'Você não tem permissão para excluir este comentário.'], 403);
+        try {
+            $this->commentService->delete($request->user(), $post, $comment);
+        } catch (DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 403);
         }
-
-        $comment->delete();
 
         return response()->json(['message' => 'Comentário excluído com sucesso.']);
     }

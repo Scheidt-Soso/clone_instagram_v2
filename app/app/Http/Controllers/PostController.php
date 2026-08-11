@@ -2,34 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DomainException;
 use App\Models\Post;
+use App\Services\PostService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
+    public function __construct(protected PostService $postService) {}
+
     public function index()
     {
-        $posts = Post::with(['user', 'images'])
-            ->whereNull('archived_at')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-
-        return response()->json($posts);
+        return response()->json($this->postService->feed());
     }
 
     public function show(Post $post)
     {
-        $post->load(['user', 'images']);
-
-        return response()->json($post);
+        return response()->json($this->postService->show($post));
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-             'caption' => 'nullable|string|max:2200',
+            'caption' => 'nullable|string|max:2200',
             'images' => 'required|array|min:1|max:10',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
@@ -38,20 +34,11 @@ class PostController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-      $post = $request->user()->posts()->create([
-    'caption' => $request->input('caption'),
-]);
-
-        foreach ($request->file('images') as $index => $image) {
-            $path = $image->store('posts', 'public');
-
-            $post->images()->create([
-                'image_path' => $path,
-                'order' => $index,
-            ]);
-        }
-
-        $post->load(['user', 'images']);
+        $post = $this->postService->create(
+            $request->user(),
+            $request->input('caption'),
+            $request->file('images')
+        );
 
         return response()->json($post, 201);
     }
@@ -62,11 +49,7 @@ class PostController extends Controller
             return response()->json(['message' => 'Você só pode excluir os próprios posts.'], 403);
         }
 
-        foreach ($post->images as $image) {
-            Storage::disk('public')->delete($image->image_path);
-        }
-
-        $post->delete();
+        $this->postService->delete($post);
 
         return response()->json(['message' => 'Post excluído com sucesso.']);
     }
@@ -77,14 +60,11 @@ class PostController extends Controller
             return response()->json(['message' => 'Você só pode editar os próprios posts.'], 403);
         }
 
-        if ($post->images()->count() <= 1) {
-            return response()->json(['message' => 'Não é possível remover a única imagem do post. Exclua o post inteiro, se for o caso.'], 422);
+        try {
+            $this->postService->removeImage($post, $imageId);
+        } catch (DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
-
-        $image = $post->images()->findOrFail($imageId);
-
-        Storage::disk('public')->delete($image->image_path);
-        $image->delete();
 
         return response()->json(['message' => 'Imagem removida com sucesso.']);
     }
@@ -95,7 +75,7 @@ class PostController extends Controller
             return response()->json(['message' => 'Você só pode arquivar os próprios posts.'], 403);
         }
 
-        $post->update(['archived_at' => now()]);
+        $this->postService->archive($post);
 
         return response()->json(['message' => 'Post arquivado com sucesso.']);
     }
@@ -106,7 +86,7 @@ class PostController extends Controller
             return response()->json(['message' => 'Você só pode desarquivar os próprios posts.'], 403);
         }
 
-        $post->update(['archived_at' => null]);
+        $this->postService->unarchive($post);
 
         return response()->json(['message' => 'Post desarquivado com sucesso.']);
     }

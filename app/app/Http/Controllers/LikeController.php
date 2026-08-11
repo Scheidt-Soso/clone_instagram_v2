@@ -3,29 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Services\LikeService;
 use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
+    public function __construct(protected LikeService $likeService) {}
+
     public function store(Request $request, Post $post)
     {
-        $post->likes()->firstOrCreate([
-            'user_id' => $request->user()->id,
-        ]);
+        $count = $this->likeService->like($request->user(), $post);
 
-        return response()->json([
-            'message' => 'Post curtido.',
-            'likes_count' => $post->likes()->count(),
-        ], 201);
+        return response()->json(['message' => 'Post curtido.', 'likes_count' => $count], 201);
     }
 
     public function destroy(Request $request, Post $post)
     {
-        $post->likes()->where('user_id', $request->user()->id)->delete();
+        $count = $this->likeService->unlike($request->user(), $post);
 
-        return response()->json([
-            'message' => 'Curtida removida.',
-            'likes_count' => $post->likes()->count(),
-        ]);
+        return response()->json(['message' => 'Curtida removida.', 'likes_count' => $count]);
     }
 }
