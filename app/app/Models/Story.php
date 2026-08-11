@@ -33,4 +33,9 @@ class Story extends Model
     {
         return $query->where('expires_at', '>', now());
     }
+
+    public function highlights()
+   {
+    return $this->belongsToMany(Highlight::class, 'highlight_story')->withPivot('order');
+   } 
 }

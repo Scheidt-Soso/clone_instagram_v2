@@ -9,17 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\HighlightController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-
     Route::get('/me', function (Request $request) {
         return $request->user();
     });
 
+    Route::get('/users/suggestions', [UserController::class, 'suggestions']);
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::put('/users/{user}', [UserController::class, 'update']);
@@ -38,7 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts/{post}/archive', [PostController::class, 'archive']);
     Route::post('/posts/{post}/unarchive', [PostController::class, 'unarchive']);
 
-    
     Route::get('/stories', [StoryController::class, 'index']);
     Route::post('/stories', [StoryController::class, 'store']);
     Route::delete('/stories/{story}', [StoryController::class, 'destroy']);
@@ -49,4 +49,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/posts/{post}/like', [LikeController::class, 'store']);
     Route::delete('/posts/{post}/like', [LikeController::class, 'destroy']);
+
+    Route::get('/users/{user}/highlights', [HighlightController::class, 'index']);
+    Route::get('/highlights/{highlight}', [HighlightController::class, 'show']);
+    Route::post('/highlights', [HighlightController::class, 'store']);
+    Route::post('/highlights/{highlight}/stories/{storyId}', [HighlightController::class, 'addStory']);
+    Route::delete('/highlights/{highlight}/stories/{storyId}', [HighlightController::class, 'removeStory']);
+    Route::delete('/highlights/{highlight}', [HighlightController::class, 'destroy']);
 });

@@ -61,4 +61,9 @@ class User extends Authenticatable
             'following_id'
         );
     }
+
+    public function highlights()
+{
+    return $this->hasMany(Highlight::class);
+}
 }
