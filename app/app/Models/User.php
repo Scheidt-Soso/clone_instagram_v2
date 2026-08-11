@@ -7,18 +7,17 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 
 #[Fillable(['name', 'username', 'email', 'password', 'bio', 'avatar_path'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-   use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * Get the attributes that should be cast.
@@ -34,27 +33,32 @@ class User extends Authenticatable
     }
 
     public function posts()
-{
-    return $this->hasMany(Post::class);
-}
-public function followers()
-{
-    return $this->belongsToMany(
-        User::class,
-        'follows',
-        'following_id',
-        'follower_id'
-    );
-}
+    {
+        return $this->hasMany(Post::class);
+    }
 
-public function following()
-{
-    return $this->belongsToMany(
-        User::class,
-        'follows',
-        'follower_id',
-        'following_id'
-    );
-}   
-}
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
+    }
 
+    public function followers()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'follows',
+            'following_id',
+            'follower_id'
+        );
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'follows',
+            'follower_id',
+            'following_id'
+        );
+    }
+}
