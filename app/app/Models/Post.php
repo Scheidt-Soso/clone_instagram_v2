@@ -12,6 +12,7 @@ class Post extends Model
     protected $fillable = [
         'user_id',
         'archived_at',
+        'caption'
     ];
 
     protected $casts = [
@@ -27,4 +28,14 @@ class Post extends Model
     {
         return $this->hasMany(PostImage::class)->orderBy('order');
     }
+
+    public function comments()
+{
+    return $this->hasMany(Comment::class)->latest();
+}
+
+public function likes()
+{
+    return $this->hasMany(Like::class);
+}
 }
