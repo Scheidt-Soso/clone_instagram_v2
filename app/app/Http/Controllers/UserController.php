@@ -9,16 +9,24 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function show(User $user)
-    {
-        return response()->json([
-            'id' => $user->id,
-            'name' => $user->name,
-            'username' => $user->username,
-            'bio' => $user->bio,
-            'avatar_path' => $user->avatar_path,
-        ]);
-    }
+   public function show(Request $request, User $user)
+{
+    $currentUser = $request->user();
+
+    return response()->json([
+        'id' => $user->id,
+        'name' => $user->name,
+        'username' => $user->username,
+        'bio' => $user->bio,
+        'avatar_path' => $user->avatar_path,
+        'posts_count' => $user->posts()->count(),
+        'followers_count' => $user->followers()->count(),
+        'following_count' => $user->following()->count(),
+        'is_following' => $currentUser->id !== $user->id
+            ? $currentUser->following()->where('users.id', $user->id)->exists()
+            : null,
+    ]);
+}
 
     public function update(Request $request, User $user)
     {
@@ -63,6 +71,21 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Conta excluída com sucesso.']);
     }
+
+
+    public function suggestions(Request $request)
+{
+    $currentUser = $request->user();
+    $followingIds = $currentUser->following()->pluck('users.id');
+
+    $suggestions = User::where('id', '!=', $currentUser->id)
+        ->whereNotIn('id', $followingIds)
+        ->inRandomOrder()
+        ->limit(5)
+        ->get(['id', 'name', 'username', 'avatar_path']);
+
+    return response()->json($suggestions);
+}
 
 
 }
