@@ -56,4 +56,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/highlights/{highlight}/stories/{storyId}', [HighlightController::class, 'addStory']);
     Route::delete('/highlights/{highlight}/stories/{storyId}', [HighlightController::class, 'removeStory']);
     Route::delete('/highlights/{highlight}', [HighlightController::class, 'destroy']);
+    Route::post('/users/{user}/avatar', [UserController::class, 'updateAvatar']);
 });

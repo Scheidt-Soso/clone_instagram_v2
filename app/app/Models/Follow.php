@@ -1,37 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Models;
 
-use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Model;
 
-class FollowController extends Controller
+class Follow extends Model
 {
-    public function store(Request $request, User $user)
+    protected $table = 'follows';
+
+    protected $fillable = ['follower_id', 'following_id'];
+
+    public function follower()
     {
-        $currentUser = $request->user();
-
-        if ($currentUser->id === $user->id) {
-            return response()->json([
-                'message' => 'Você não pode seguir a si mesmo.'
-            ], 422);
-        }
-
-        $currentUser->following()->syncWithoutDetaching($user->id);
-
-        return response()->json([
-            'message' => 'Usuário seguido com sucesso.'
-        ], 201);
+        return $this->belongsTo(User::class, 'follower_id');
     }
 
-    public function destroy(Request $request, User $user)
+    public function following()
     {
-        $currentUser = $request->user();
-
-        $currentUser->following()->detach($user->id);
-
-        return response()->json([
-            'message' => 'Usuário deixou de ser seguido.'
-        ]);
+        return $this->belongsTo(User::class, 'following_id');
     }
 }

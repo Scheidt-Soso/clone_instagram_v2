@@ -2,32 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DomainException;
 use App\Models\Highlight;
 use App\Models\User;
+use App\Services\HighlightService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class HighlightController extends Controller
 {
+    public function __construct(protected HighlightService $highlightService) {}
+
     public function index(User $user)
     {
-        $highlights = $user->highlights()->with('stories')->get()->map(function ($highlight) {
-            return [
-                'id' => $highlight->id,
-                'title' => $highlight->title,
-                'cover' => optional($highlight->stories->first())->media_path,
-                'stories_count' => $highlight->stories->count(),
-            ];
-        });
-
-        return response()->json($highlights);
+        return response()->json($this->highlightService->list($user));
     }
 
     public function show(Highlight $highlight)
     {
-        $highlight->load('stories');
-
-        return response()->json($highlight);
+        return response()->json($this->highlightService->show($highlight));
     }
 
     public function store(Request $request)
@@ -42,22 +35,15 @@ class HighlightController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $ownStoryIds = $request->user()->stories()->pluck('id');
-        $invalidIds = collect($request->story_ids)->diff($ownStoryIds);
-
-        if ($invalidIds->isNotEmpty()) {
-            return response()->json(['message' => 'Você só pode usar suas próprias stories no destaque.'], 403);
+        try {
+            $highlight = $this->highlightService->create(
+                $request->user(),
+                $request->title,
+                $request->story_ids
+            );
+        } catch (DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 403);
         }
-
-        $highlight = $request->user()->highlights()->create([
-            'title' => $request->title,
-        ]);
-
-        foreach ($request->story_ids as $index => $storyId) {
-            $highlight->stories()->attach($storyId, ['order' => $index]);
-        }
-
-        $highlight->load('stories');
 
         return response()->json($highlight, 201);
     }
@@ -68,12 +54,9 @@ class HighlightController extends Controller
             return response()->json(['message' => 'Você só pode editar os próprios destaques.'], 403);
         }
 
-        $story = $request->user()->stories()->findOrFail($storyId);
+        $highlight = $this->highlightService->addStory($request->user(), $highlight, $storyId);
 
-        $nextOrder = $highlight->stories()->count();
-        $highlight->stories()->syncWithoutDetaching([$story->id => ['order' => $nextOrder]]);
-
-        return response()->json($highlight->load('stories'));
+        return response()->json($highlight);
     }
 
     public function removeStory(Request $request, Highlight $highlight, $storyId)
@@ -82,7 +65,7 @@ class HighlightController extends Controller
             return response()->json(['message' => 'Você só pode editar os próprios destaques.'], 403);
         }
 
-        $highlight->stories()->detach($storyId);
+        $this->highlightService->removeStory($highlight, $storyId);
 
         return response()->json(['message' => 'Story removida do destaque.']);
     }
@@ -93,7 +76,7 @@ class HighlightController extends Controller
             return response()->json(['message' => 'Você só pode excluir os próprios destaques.'], 403);
         }
 
-        $highlight->delete();
+        $this->highlightService->delete($highlight);
 
         return response()->json(['message' => 'Destaque excluído com sucesso.']);
     }
