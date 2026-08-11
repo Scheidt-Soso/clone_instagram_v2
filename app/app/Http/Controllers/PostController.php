@@ -29,6 +29,7 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+             'caption' => 'nullable|string|max:2200',
             'images' => 'required|array|min:1|max:10',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
@@ -37,7 +38,9 @@ class PostController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $post = $request->user()->posts()->create([]);
+      $post = $request->user()->posts()->create([
+    'caption' => $request->input('caption'),
+]);
 
         foreach ($request->file('images') as $index => $image) {
             $path = $image->store('posts', 'public');
