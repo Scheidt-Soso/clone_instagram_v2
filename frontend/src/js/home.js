@@ -51,7 +51,7 @@ async function renderHome(container) {
       </div>
       <div class="post-actions">
         <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}" data-liked="${isLiked}">
-          ${isLiked ? '♥' : '♡'}
+          <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
         </button>
         <a href="#/post/${post.id}" class="action-btn">💬</a>
       </div>
@@ -106,8 +106,8 @@ async function renderHome(container) {
   }
 
   feedEl.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('like-btn')) {
-      const btn = e.target;
+    const btn = e.target.closest('.like-btn');
+    if (btn) {
       const postId = btn.dataset.postId;
       const isLiked = btn.dataset.liked === 'true';
       const likesCountEl = btn.closest('.post-card').querySelector('.post-likes');
@@ -116,10 +116,10 @@ async function renderHome(container) {
         let result;
         if (isLiked) {
           result = await apiRequest(`/posts/${postId}/like`, { method: 'DELETE' });
-          btn.textContent = '♡'; btn.classList.remove('liked'); btn.dataset.liked = 'false';
+          btn.innerHTML = '<i class="fa-regular fa-heart"></i>'; btn.classList.remove('liked'); btn.dataset.liked = 'false';
         } else {
           result = await apiRequest(`/posts/${postId}/like`, { method: 'POST' });
-          btn.textContent = '♥'; btn.classList.add('liked'); btn.dataset.liked = 'true';
+          btn.innerHTML = '<i class="fa-solid fa-heart"></i>'; btn.classList.add('liked'); btn.dataset.liked = 'true';
         }
         likesCountEl.textContent = `${result.likes_count} curtidas`;
       } catch (err) {

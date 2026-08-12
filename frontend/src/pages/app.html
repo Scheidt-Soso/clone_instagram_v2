@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../css/feed.css">
   <link rel="stylesheet" href="../css/profile.css">
   <link rel="stylesheet" href="../css/edit-profile.css">
+  <link rel="stylesheet" href="../css/post.css">
   <link rel="stylesheet" href="../css/app.css">
 </head>
 <body class="app-shell">
@@ -26,7 +27,6 @@
       <a href="#/create-post" class="sidebar-item" data-route="create-post"><i class="fa-solid fa-camera nav-icon"></i> <span>Criar</span></a>
       <a href="#/profile" class="sidebar-item" data-route="profile"><i class="fa-regular fa-circle-user nav-icon" data-icon-base="circle-user"></i> <span>Profile</span></a>
     </nav>
-    <button class="sidebar-item logout-btn" id="logoutBtn">🚪 <span>Sair</span></button>
   </aside>
 
   <main class="main-area">
@@ -53,12 +53,6 @@
     registerRoute('post/:id', renderPost);
     registerRoute('create-post', renderCreatePost);
     registerRoute('edit-post/:id', renderEditPost);
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('current_user');
-      window.location.href = 'index.html';
-    });
   </script>
 </body>
 </html>
