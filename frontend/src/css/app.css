@@ -162,3 +162,73 @@
   .sidebar-item span, .sidebar-logo { display: none; }
   .main-area { margin-left: 70px; }
 }
+
+.create-post-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.create-post-container h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.preview-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-remove {
+  position: absolute;
+  top: 4px; right: 4px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 22px; height: 22px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  background: #fafafa;
+  color: #262626;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+#postCaption {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  background: #fafafa;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 16px;
+}
