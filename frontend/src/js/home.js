@@ -16,7 +16,7 @@ async function renderHome(container) {
 
   function renderPost(post) {
     const isLiked = post.likes && post.likes.length > 0;
-    const firstImage = post.images && post.images[0];
+    const images = post.images || [];
 
     const card = document.createElement('div');
     card.className = 'post-card';
@@ -25,8 +25,15 @@ async function renderHome(container) {
         <img class="post-avatar" src="${post.user.avatar_path ? formatImageUrl(post.user.avatar_path) : defaultAvatar()}" alt="">
         <a href="#/profile/${post.user.id}" class="post-username">${post.user.username}</a>
       </div>
-      <div class="post-image-wrapper">
-        <img class="post-image" src="${firstImage ? formatImageUrl(firstImage.image_path) : ''}" alt="">
+      <div class="post-image-wrapper" data-current="0">
+        <img class="post-image" src="${images[0] ? formatImageUrl(images[0].image_path) : ''}" alt="">
+        ${images.length > 1 ? `
+          <button class="carousel-arrow left" data-dir="-1" style="display:none;"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="carousel-arrow right" data-dir="1"><i class="fa-solid fa-chevron-right"></i></button>
+          <div class="carousel-dots">
+            ${images.map((_, i) => `<span class="carousel-dot ${i === 0 ? 'active' : ''}"></span>`).join('')}
+          </div>
+        ` : ''}
       </div>
       <div class="post-actions">
         <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}" data-liked="${isLiked}">
@@ -38,6 +45,31 @@ async function renderHome(container) {
       ${post.caption ? `<div class="post-caption"><strong>${post.user.username}</strong>${post.caption}</div>` : ''}
       <a href="#/post/${post.id}" class="post-comments-link">Ver os ${post.comments_count} comentários</a>
     `;
+
+    if (images.length > 1) {
+      const wrapper = card.querySelector('.post-image-wrapper');
+      const imgEl = wrapper.querySelector('.post-image');
+      const dots = wrapper.querySelectorAll('.carousel-dot');
+      const leftArrow = wrapper.querySelector('.carousel-arrow.left');
+      const rightArrow = wrapper.querySelector('.carousel-arrow.right');
+
+      function updateCarousel(index) {
+        wrapper.dataset.current = index;
+        imgEl.src = formatImageUrl(images[index].image_path);
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+        leftArrow.style.display = index === 0 ? 'none' : 'flex';
+        rightArrow.style.display = index === images.length - 1 ? 'none' : 'flex';
+      }
+
+      wrapper.querySelectorAll('.carousel-arrow').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const current = Number(wrapper.dataset.current);
+          const dir = Number(btn.dataset.dir);
+          updateCarousel(current + dir);
+        });
+      });
+    }
+
     return card;
   }
 
