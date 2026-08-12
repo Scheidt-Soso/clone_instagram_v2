@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro - Instagram Clone</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📷</text></svg>">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="logo">Instagram</div>
+      <form id="registerForm">
+        <div class="form-group">
+          <input type="text" id="name" placeholder="Nome completo" required>
+        </div>
+        <div class="form-group">
+          <input type="text" id="username" placeholder="Nome de usuário" required>
+        </div>
+        <div class="form-group">
+          <input type="email" id="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="password" placeholder="Senha" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="passwordConfirmation" placeholder="Confirme a senha" required>
+        </div>
+        <button type="submit" class="btn-primary" id="submitBtn">Cadastrar</button>
+        <div class="error-message" id="errorMessage"></div>
+      </form>
+    </div>
+    <div class="switch-link">
+      Já tem uma conta? <a href="index.html">Entrar</a>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+</body>
+</html>

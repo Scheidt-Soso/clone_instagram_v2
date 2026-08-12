@@ -11,7 +11,13 @@ class PostService
 {
     public function feed()
     {
+        $currentUserId = auth()->id();
+
         return Post::with(['user', 'images'])
+            ->withCount(['likes', 'comments'])
+            ->with(['likes' => function ($query) use ($currentUserId) {
+                $query->where('user_id', $currentUserId);
+            }])
             ->whereNull('archived_at')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
@@ -19,7 +25,12 @@ class PostService
 
     public function show(Post $post): Post
     {
-        return $post->load(['user', 'images']);
+        $currentUserId = auth()->id();
+
+        return $post->loadCount(['likes', 'comments'])
+            ->load(['user', 'images', 'likes' => function ($query) use ($currentUserId) {
+                $query->where('user_id', $currentUserId);
+            }]);
     }
 
     public function create(User $user, ?string $caption, array $images): Post

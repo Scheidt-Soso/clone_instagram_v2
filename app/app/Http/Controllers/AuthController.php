@@ -6,11 +6,34 @@ use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
     public function __construct(protected AuthService $authService) {}
 
+    #[OA\Post(
+        path: "/register",
+        summary: "Registrar novo usuário",
+        tags: ["Autenticação"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["name", "username", "email", "password", "password_confirmation"],
+                properties: [
+                    new OA\Property(property: "name", type: "string", example: "Maria Silva"),
+                    new OA\Property(property: "username", type: "string", example: "mariasilva"),
+                    new OA\Property(property: "email", type: "string", example: "maria@teste.com"),
+                    new OA\Property(property: "password", type: "string", example: "senha123"),
+                    new OA\Property(property: "password_confirmation", type: "string", example: "senha123"),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "Usuário criado com sucesso"),
+            new OA\Response(response: 422, description: "Erro de validação"),
+        ]
+    )]
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -29,6 +52,25 @@ class AuthController extends Controller
         return response()->json($result, 201);
     }
 
+    #[OA\Post(
+        path: "/login",
+        summary: "Login",
+        tags: ["Autenticação"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["email", "password"],
+                properties: [
+                    new OA\Property(property: "email", type: "string", example: "maria@teste.com"),
+                    new OA\Property(property: "password", type: "string", example: "senha123"),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Login realizado com sucesso"),
+            new OA\Response(response: 401, description: "Credenciais inválidas"),
+        ]
+    )]
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [

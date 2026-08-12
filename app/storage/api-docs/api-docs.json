@@ -1,0 +1,352 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Instagram Clone API",
+        "description": "API do projeto pessoal - clone do Instagram feito em Laravel",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Ambiente de desenvolvimento"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Registrar novo usuário",
+                "operationId": "0903f2e0df1a8857bee538fc055417f0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "username",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Maria Silva"
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "mariasilva"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "maria@teste.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "senha123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "senha123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário criado com sucesso"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Login",
+                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "maria@teste.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "senha123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login realizado com sucesso"
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Listar/buscar usuários",
+                "operationId": "7e2f5799553ec93c9c43e2a58490d447",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Busca por nome ou username",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de usuários"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/users/suggestions": {
+            "get": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Sugestões de usuários para seguir",
+                "operationId": "53d0848e159311a49b0e452f5d2ee493",
+                "responses": {
+                    "200": {
+                        "description": "Até 5 usuários aleatórios que você ainda não segue"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/users/{user}": {
+            "get": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Ver perfil de um usuário",
+                "operationId": "0b9800c6a2369ce94c1efa162edfa374",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados do perfil, contagens e posts"
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Editar o próprio perfil",
+                "operationId": "caaec06bf33a577d630c028222869ee6",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Maria Silva"
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "mariasilva"
+                                    },
+                                    "bio": {
+                                        "type": "string",
+                                        "example": "Nova bio"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Perfil atualizado"
+                    },
+                    "403": {
+                        "description": "Não é o dono do perfil"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Excluir a própria conta",
+                "operationId": "a4e18f8517afcc062825920ffb6cd762",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Conta excluída (soft delete)"
+                    },
+                    "403": {
+                        "description": "Não é o dono da conta"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/users/{user}/avatar": {
+            "post": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Trocar foto de perfil",
+                "operationId": "ecf262198917fd26404de6685b4235c3",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "avatar"
+                                ],
+                                "properties": {
+                                    "avatar": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Avatar atualizado"
+                    },
+                    "403": {
+                        "description": "Não é o dono do perfil"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "bearerFormat": "Sanctum Token",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Autenticação",
+            "description": "Autenticação"
+        },
+        {
+            "name": "Usuários",
+            "description": "Usuários"
+        }
+    ]
+}

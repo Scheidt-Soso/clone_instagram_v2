@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stories', [StoryController::class, 'index']);
     Route::post('/stories', [StoryController::class, 'store']);
     Route::delete('/stories/{story}', [StoryController::class, 'destroy']);
+    Route::get('/stories/mine', [StoryController::class, 'mine']);
 
     Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
