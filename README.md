@@ -74,8 +74,7 @@ O nginx serve o conteúdo estático de `frontend/src/` direto em `http://localho
 | Serviço | URL |
 | --- | --- |
 | Aplicação (frontend) | http://localhost:8080/pages/index.html |
-| API | http://localhost:8000/api |
-| Swagger da API | http://localhost:8000/docs |
+| Swagger da API | http://localhost:8000/api/documentation |
 | phpMyAdmin | http://localhost:8081 |
 
 ## Credenciais do banco
