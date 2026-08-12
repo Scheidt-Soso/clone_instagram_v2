@@ -17,6 +17,11 @@ class PostController extends Controller
         return response()->json($this->postService->feed());
     }
 
+    public function archived(Request $request)
+    {
+        return response()->json($this->postService->archived($request->user()));
+    }
+
     public function show(Post $post)
     {
         return response()->json($this->postService->show($post));
@@ -78,6 +83,25 @@ class PostController extends Controller
         $this->postService->archive($post);
 
         return response()->json(['message' => 'Post arquivado com sucesso.']);
+    }
+
+    public function update(Request $request, Post $post)
+    {
+        if ($request->user()->id !== $post->user_id) {
+            return response()->json(['message' => 'Você só pode editar os próprios posts.'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'caption' => 'nullable|string|max:2200',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $post = $this->postService->updateCaption($post, $request->input('caption'));
+
+        return response()->json($post);
     }
 
     public function unarchive(Request $request, Post $post)

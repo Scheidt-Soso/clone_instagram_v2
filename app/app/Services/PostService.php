@@ -33,6 +33,22 @@ class PostService
             }]);
     }
 
+    public function archived(User $user)
+    {
+        return $user->posts()
+            ->with('images')
+            ->whereNotNull('archived_at')
+            ->orderBy('archived_at', 'desc')
+            ->get();
+    }
+
+    public function updateCaption(Post $post, ?string $caption): Post
+    {
+        $post->update(['caption' => $caption]);
+
+        return $post->load(['user', 'images']);
+    }
+
     public function create(User $user, ?string $caption, array $images): Post
     {
         $post = $user->posts()->create(['caption' => $caption]);

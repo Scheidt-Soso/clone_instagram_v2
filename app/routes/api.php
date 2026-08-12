@@ -32,9 +32,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Posts
     Route::get('/posts', [PostController::class, 'index']);
+    Route::get('/posts/archived', [PostController::class, 'archived']);
     Route::get('/posts/{post}', [PostController::class, 'show']);
     Route::post('/posts', [PostController::class, 'store']);
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
+    Route::put('/posts/{post}', [PostController::class, 'update']);
     Route::delete('/posts/{post}/images/{imageId}', [PostController::class, 'destroyImage']);
     Route::post('/posts/{post}/archive', [PostController::class, 'archive']);
     Route::post('/posts/{post}/unarchive', [PostController::class, 'unarchive']);
