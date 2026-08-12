@@ -14,15 +14,15 @@ class UserController extends Controller
     public function __construct(protected UserService $userService) {}
 
     #[OA\Get(
-        path: "/users",
-        summary: "Listar/buscar usuários",
-        tags: ["Usuários"],
-        security: [["sanctum" => []]],
+        path: '/users',
+        summary: 'Listar/buscar usuários',
+        tags: ['Usuários'],
+        security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: "search", in: "query", required: false, description: "Busca por nome ou username", schema: new OA\Schema(type: "string")),
+            new OA\Parameter(name: 'search', in: 'query', required: false, description: 'Busca por nome ou username', schema: new OA\Schema(type: 'string')),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Lista paginada de usuários"),
+            new OA\Response(response: 200, description: 'Lista paginada de usuários'),
         ]
     )]
     public function index(Request $request)
@@ -33,12 +33,12 @@ class UserController extends Controller
     }
 
     #[OA\Get(
-        path: "/users/suggestions",
-        summary: "Sugestões de usuários para seguir",
-        tags: ["Usuários"],
-        security: [["sanctum" => []]],
+        path: '/users/suggestions',
+        summary: 'Sugestões de usuários para seguir',
+        tags: ['Usuários'],
+        security: [['sanctum' => []]],
         responses: [
-            new OA\Response(response: 200, description: "Até 5 usuários aleatórios que você ainda não segue"),
+            new OA\Response(response: 200, description: 'Até 5 usuários aleatórios que você ainda não segue'),
         ]
     )]
     public function suggestions(Request $request)
@@ -49,16 +49,32 @@ class UserController extends Controller
     }
 
     #[OA\Get(
-        path: "/users/{user}",
-        summary: "Ver perfil de um usuário",
-        tags: ["Usuários"],
-        security: [["sanctum" => []]],
+        path: '/users/recommended',
+        summary: 'Recomendados para seguir',
+        tags: ['Usuários'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Usuários que curtiram os mesmos posts que você (ou que curtiram seus posts), ordenados por afinidade, excluindo quem você já segue'),
+        ]
+    )]
+    public function recommended(Request $request)
+    {
+        return response()->json(
+            $this->userService->recommended($request->user())
+        );
+    }
+
+    #[OA\Get(
+        path: '/users/{user}',
+        summary: 'Ver perfil de um usuário',
+        tags: ['Usuários'],
+        security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: "user", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Dados do perfil, contagens e posts"),
-            new OA\Response(response: 404, description: "Usuário não encontrado"),
+            new OA\Response(response: 200, description: 'Dados do perfil, contagens e posts'),
+            new OA\Response(response: 404, description: 'Usuário não encontrado'),
         ]
     )]
     public function show(Request $request, User $user)
@@ -69,26 +85,26 @@ class UserController extends Controller
     }
 
     #[OA\Put(
-        path: "/users/{user}",
-        summary: "Editar o próprio perfil",
-        tags: ["Usuários"],
-        security: [["sanctum" => []]],
+        path: '/users/{user}',
+        summary: 'Editar o próprio perfil',
+        tags: ['Usuários'],
+        security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: "user", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         ],
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "name", type: "string", example: "Maria Silva"),
-                    new OA\Property(property: "username", type: "string", example: "mariasilva"),
-                    new OA\Property(property: "bio", type: "string", example: "Nova bio"),
+                    new OA\Property(property: 'name', type: 'string', example: 'Maria Silva'),
+                    new OA\Property(property: 'username', type: 'string', example: 'mariasilva'),
+                    new OA\Property(property: 'bio', type: 'string', example: 'Nova bio'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Perfil atualizado"),
-            new OA\Response(response: 403, description: "Não é o dono do perfil"),
-            new OA\Response(response: 422, description: "Erro de validação"),
+            new OA\Response(response: 200, description: 'Perfil atualizado'),
+            new OA\Response(response: 403, description: 'Não é o dono do perfil'),
+            new OA\Response(response: 422, description: 'Erro de validação'),
         ]
     )]
     public function update(Request $request, User $user)
@@ -113,28 +129,28 @@ class UserController extends Controller
     }
 
     #[OA\Post(
-        path: "/users/{user}/avatar",
-        summary: "Trocar foto de perfil",
-        tags: ["Usuários"],
-        security: [["sanctum" => []]],
+        path: '/users/{user}/avatar',
+        summary: 'Trocar foto de perfil',
+        tags: ['Usuários'],
+        security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: "user", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         ],
         requestBody: new OA\RequestBody(
             content: new OA\MediaType(
-                mediaType: "multipart/form-data",
+                mediaType: 'multipart/form-data',
                 schema: new OA\Schema(
-                    required: ["avatar"],
+                    required: ['avatar'],
                     properties: [
-                        new OA\Property(property: "avatar", type: "string", format: "binary"),
+                        new OA\Property(property: 'avatar', type: 'string', format: 'binary'),
                     ]
                 )
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Avatar atualizado"),
-            new OA\Response(response: 403, description: "Não é o dono do perfil"),
-            new OA\Response(response: 422, description: "Erro de validação"),
+            new OA\Response(response: 200, description: 'Avatar atualizado'),
+            new OA\Response(response: 403, description: 'Não é o dono do perfil'),
+            new OA\Response(response: 422, description: 'Erro de validação'),
         ]
     )]
     public function updateAvatar(Request $request, User $user)
@@ -157,16 +173,16 @@ class UserController extends Controller
     }
 
     #[OA\Delete(
-        path: "/users/{user}",
-        summary: "Excluir a própria conta",
-        tags: ["Usuários"],
-        security: [["sanctum" => []]],
+        path: '/users/{user}',
+        summary: 'Excluir a própria conta',
+        tags: ['Usuários'],
+        security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: "user", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Conta excluída (soft delete)"),
-            new OA\Response(response: 403, description: "Não é o dono da conta"),
+            new OA\Response(response: 200, description: 'Conta excluída (soft delete)'),
+            new OA\Response(response: 403, description: 'Não é o dono da conta'),
         ]
     )]
     public function destroy(Request $request, User $user)

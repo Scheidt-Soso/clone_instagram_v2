@@ -37,6 +37,11 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
     public function stories()
     {
         return $this->hasMany(Story::class);
@@ -63,7 +68,7 @@ class User extends Authenticatable
     }
 
     public function highlights()
-{
-    return $this->hasMany(Highlight::class);
-}
+    {
+        return $this->hasMany(Highlight::class);
+    }
 }

@@ -14,6 +14,13 @@
 <body class="app-shell">
   <aside class="sidebar">
     <div class="sidebar-logo">Instagram</div>
+    <div class="sidebar-search">
+      <div class="search-input-wrapper">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar usuários..." autocomplete="off" autocapitalize="none" spellcheck="false">
+      </div>
+      <div id="searchResults" class="search-results hidden"></div>
+    </div>
     <nav class="sidebar-nav">
       <a href="#/home" class="sidebar-item" data-route="home"><i class="fa-solid fa-house nav-icon" data-icon-base="house"></i> <span>Home</span></a>
       <a href="#/create-post" class="sidebar-item" data-route="create-post"><i class="fa-solid fa-camera nav-icon"></i> <span>Criar</span></a>
@@ -28,13 +35,15 @@
 
   <script src="../js/api.js"></script>
   <script src="../js/auth-guard.js"></script>
+  <script src="../js/search.js"></script>
   <script src="../js/stories.js"></script>
   <script src="../js/home.js"></script>
   <script src="../js/profile.js"></script>
   <script src="../js/edit-profile.js"></script>
   <script src="../js/post.js"></script>
-  <script src="../js/router.js"></script>
+  <script src="../js/edit-post.js"></script>
   <script src="../js/create-post.js"></script>
+  <script src="../js/router.js"></script>
 
   <script>
     registerRoute('home', renderHome);
@@ -43,6 +52,7 @@
     registerRoute('edit-profile', renderEditProfile);
     registerRoute('post/:id', renderPost);
     registerRoute('create-post', renderCreatePost);
+    registerRoute('edit-post/:id', renderEditPost);
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
       localStorage.removeItem('auth_token');

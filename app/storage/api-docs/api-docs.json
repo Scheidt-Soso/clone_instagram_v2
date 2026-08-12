@@ -5,12 +5,6 @@
         "description": "API do projeto pessoal - clone do Instagram feito em Laravel",
         "version": "1.0.0"
     },
-    "servers": [
-        {
-            "url": "http://localhost:8000/api",
-            "description": "Ambiente de desenvolvimento"
-        }
-    ],
     "paths": {
         "/register": {
             "post": {
@@ -109,6 +103,936 @@
                 }
             }
         },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Fazer logout (revogar token)",
+                "operationId": "68a6108af04af5e3bc1ea68a6c6f1299",
+                "responses": {
+                    "200": {
+                        "description": "Logout realizado com sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}/comments": {
+            "get": {
+                "tags": [
+                    "Comentários"
+                ],
+                "summary": "Listar comentários de um post",
+                "operationId": "00a7052dfabc2d7ba47f1f5d5d62f176",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de comentários com o autor"
+                    },
+                    "404": {
+                        "description": "Post não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Comentários"
+                ],
+                "summary": "Comentar em um post",
+                "operationId": "98a3c321f84f38f3212cd81009382df5",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "body"
+                                ],
+                                "properties": {
+                                    "body": {
+                                        "type": "string",
+                                        "example": "Que foto incrível!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comentário criado"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}/comments/{comment}": {
+            "delete": {
+                "tags": [
+                    "Comentários"
+                ],
+                "summary": "Excluir um comentário",
+                "operationId": "63437965df743a0706c14d87214bc89f",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "comment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comentário excluído"
+                    },
+                    "403": {
+                        "description": "Sem permissão para excluir"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/users/{user}/follow": {
+            "post": {
+                "tags": [
+                    "Seguidores"
+                ],
+                "summary": "Seguir um usuário",
+                "operationId": "2820570c33620782b661d0d0f444d763",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Usuário seguido com sucesso"
+                    },
+                    "422": {
+                        "description": "Não é possível seguir a si mesmo"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Seguidores"
+                ],
+                "summary": "Deixar de seguir um usuário",
+                "operationId": "5c2c02e45302517b5cc9baab6087100d",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuário deixou de ser seguido"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/users/{user}/highlights": {
+            "get": {
+                "tags": [
+                    "Destaques"
+                ],
+                "summary": "Listar destaques de um usuário",
+                "operationId": "4a8bb33d6506363289bd18c17d90f4a1",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de destaques com capa e contagem"
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/highlights/{highlight}": {
+            "get": {
+                "tags": [
+                    "Destaques"
+                ],
+                "summary": "Ver um destaque com suas stories",
+                "operationId": "3f06aa33a8d02bdafe929629f7ba0823",
+                "parameters": [
+                    {
+                        "name": "highlight",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do destaque"
+                    },
+                    "404": {
+                        "description": "Destaque não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Destaques"
+                ],
+                "summary": "Excluir um destaque",
+                "operationId": "3ee50ec6d6c0cd2004a222dce8ea4341",
+                "parameters": [
+                    {
+                        "name": "highlight",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Destaque excluído"
+                    },
+                    "403": {
+                        "description": "Não é o dono do destaque"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/highlights": {
+            "post": {
+                "tags": [
+                    "Destaques"
+                ],
+                "summary": "Criar um destaque com stories próprias",
+                "operationId": "ae26d7bdd19659096e02b33cb9d8a136",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "story_ids"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Viagem"
+                                    },
+                                    "story_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Destaque criado"
+                    },
+                    "403": {
+                        "description": "Só é permitido usar as próprias stories"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/highlights/{highlight}/stories/{storyId}": {
+            "post": {
+                "tags": [
+                    "Destaques"
+                ],
+                "summary": "Adicionar uma story ao destaque",
+                "operationId": "39a6f54fc5394d29841ad0daf2636eef",
+                "parameters": [
+                    {
+                        "name": "highlight",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Story adicionada ao destaque"
+                    },
+                    "403": {
+                        "description": "Não é o dono do destaque"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Destaques"
+                ],
+                "summary": "Remover uma story do destaque",
+                "operationId": "ea48bb1a9b0825314e2095354bc99b16",
+                "parameters": [
+                    {
+                        "name": "highlight",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Story removida do destaque"
+                    },
+                    "403": {
+                        "description": "Não é o dono do destaque"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}/like": {
+            "post": {
+                "tags": [
+                    "Curtidas"
+                ],
+                "summary": "Curtir um post",
+                "operationId": "bb55daf5e85844ea3ca25ee4bd3ea44d",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Post curtido"
+                    },
+                    "404": {
+                        "description": "Post não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Curtidas"
+                ],
+                "summary": "Remover curtida de um post",
+                "operationId": "3995d36f599dac206067408292dbe032",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Curtida removida"
+                    },
+                    "404": {
+                        "description": "Post não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Feed de posts",
+                "operationId": "5f292ed47bdbfa79356750be0807450c",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de posts com usuário, imagens e contagens"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Criar um post com até 10 imagens",
+                "operationId": "c2e0b0e26215e6d34ece33ebae25f7df",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "images"
+                                ],
+                                "properties": {
+                                    "caption": {
+                                        "type": "string",
+                                        "example": "Meu novo post"
+                                    },
+                                    "images": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "maxItems": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post criado"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts/archived": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Listar posts arquivados do próprio usuário",
+                "operationId": "da793d285c750da26393588ce75465eb",
+                "responses": {
+                    "200": {
+                        "description": "Lista de posts arquivados"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Ver detalhes de um post",
+                "operationId": "19d7b55d7d5efd7bc27ed7c01d74ca95",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do post"
+                    },
+                    "404": {
+                        "description": "Post não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Editar legenda de um post",
+                "operationId": "97ae61bfc5c99543e90d6f4136332c12",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "caption": {
+                                        "type": "string",
+                                        "example": "Legenda atualizada"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Post atualizado"
+                    },
+                    "403": {
+                        "description": "Não é o dono do post"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Excluir um post",
+                "operationId": "f5991cc3c6e9a5fcb5b97135fbe27b0c",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post excluído"
+                    },
+                    "403": {
+                        "description": "Não é o dono do post"
+                    },
+                    "404": {
+                        "description": "Post não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}/images/{imageId}": {
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Remover uma imagem de um post",
+                "operationId": "187a6b792cbf0dbdf77ae6740daa0a2a",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "imageId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Imagem removida"
+                    },
+                    "403": {
+                        "description": "Não é o dono do post"
+                    },
+                    "422": {
+                        "description": "Não é possível remover a única imagem"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}/archive": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Arquivar um post",
+                "operationId": "945a8c810c0ba3e1bbcc2618845f7295",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post arquivado"
+                    },
+                    "403": {
+                        "description": "Não é o dono do post"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}/unarchive": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Desarquivar um post",
+                "operationId": "094408eda160c90067f68d9687c35bb3",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post desarquivado"
+                    },
+                    "403": {
+                        "description": "Não é o dono do post"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/stories": {
+            "get": {
+                "tags": [
+                    "Stories"
+                ],
+                "summary": "Feed de stories (usuários seguidos)",
+                "operationId": "3b7ca25d3f2902333dc031e052d6f3f9",
+                "responses": {
+                    "200": {
+                        "description": "Stories ativas agrupadas por usuário"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Stories"
+                ],
+                "summary": "Criar uma story",
+                "operationId": "9bd3f80317a4d0b0d7a4f0de3e8108a3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "media"
+                                ],
+                                "properties": {
+                                    "media": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Story criada"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/stories/mine": {
+            "get": {
+                "tags": [
+                    "Stories"
+                ],
+                "summary": "Listar as próprias stories ativas",
+                "operationId": "a93c9e23fb0fc2baba99680bd98620da",
+                "responses": {
+                    "200": {
+                        "description": "Lista de stories do usuário"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/stories/{story}": {
+            "delete": {
+                "tags": [
+                    "Stories"
+                ],
+                "summary": "Excluir uma story",
+                "operationId": "217ef5d96a7be886f874397ad79c516b",
+                "parameters": [
+                    {
+                        "name": "story",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Story excluída"
+                    },
+                    "403": {
+                        "description": "Não é o dono da story"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/users": {
             "get": {
                 "tags": [
@@ -149,6 +1073,25 @@
                 "responses": {
                     "200": {
                         "description": "Até 5 usuários aleatórios que você ainda não segue"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/users/recommended": {
+            "get": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Recomendados para seguir",
+                "operationId": "dd46cea11c0504e4f2deabfbf100bd25",
+                "responses": {
+                    "200": {
+                        "description": "Usuários que curtiram os mesmos posts que você (ou que curtiram seus posts), ordenados por afinidade, excluindo quem você já segue"
                     }
                 },
                 "security": [
@@ -328,6 +1271,34 @@
                     }
                 ]
             }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Dados do usuário autenticado",
+                "operationId": "4cfef33601a71fca96985327226b1414",
+                "responses": {
+                    "200": {
+                        "description": "Usuário autenticado"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://localhost:8000/api",
+                        "description": "Ambiente de desenvolvimento"
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -343,6 +1314,30 @@
         {
             "name": "Autenticação",
             "description": "Autenticação"
+        },
+        {
+            "name": "Comentários",
+            "description": "Comentários"
+        },
+        {
+            "name": "Seguidores",
+            "description": "Seguidores"
+        },
+        {
+            "name": "Destaques",
+            "description": "Destaques"
+        },
+        {
+            "name": "Curtidas",
+            "description": "Curtidas"
+        },
+        {
+            "name": "Posts",
+            "description": "Posts"
+        },
+        {
+            "name": "Stories",
+            "description": "Stories"
         },
         {
             "name": "Usuários",
