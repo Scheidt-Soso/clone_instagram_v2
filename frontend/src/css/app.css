@@ -157,7 +157,6 @@
 
 .sidebar-item:hover { background: #fafafa; }
 .sidebar-item.active { font-weight: 700; }
-.logout-btn { color: #ed4956; }
 
 .main-area {
   margin-left: 220px;

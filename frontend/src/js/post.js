@@ -6,8 +6,8 @@ async function renderPost(container, params) {
     const canDelete = comment.user.id === currentUser.id || postOwnerId === currentUser.id;
     return `
       <div class="comment-item" data-comment-id="${comment.id}">
-        <div><strong>${comment.user.username}</strong>${comment.body}</div>
-        ${canDelete ? `<button class="comment-delete" data-comment-id="${comment.id}">excluir</button>` : ''}
+        <div class="comment-body"><strong>${comment.user.username}</strong>${comment.body}</div>
+        ${canDelete ? `<button class="comment-delete" data-comment-id="${comment.id}" title="Excluir comentário" aria-label="Excluir comentário"><i class="fa-solid fa-trash-can"></i></button>` : ''}
       </div>
     `;
   }
@@ -40,7 +40,9 @@ async function renderPost(container, params) {
         ` : ''}
       </div>
       <div class="post-actions">
-        <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" data-liked="${isLiked}">${isLiked ? '♥' : '♡'}</button>
+        <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" data-liked="${isLiked}">
+          <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+        </button>
       </div>
       <div class="post-likes" id="likesCount">${post.likes_count} curtidas</div>
       ${post.caption ? `<div class="post-caption"><strong>${post.user.username}</strong>${post.caption}</div>` : ''}
@@ -48,8 +50,12 @@ async function renderPost(container, params) {
     <div class="comments-section">
       <div id="commentsList"></div>
       <form class="comment-form" id="commentForm">
-        <input type="text" class="comment-input" id="commentInput" placeholder="Adicione um comentário..." required>
-        <button type="submit" class="comment-submit" id="commentSubmitBtn">Publicar</button>
+        <div class="comment-form-box">
+          <input type="text" class="comment-input" id="commentInput" placeholder="Adicione um comentário..." autocomplete="off">
+          <button type="submit" class="comment-submit" id="commentSubmitBtn" disabled title="Publicar" aria-label="Publicar">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
       </form>
     </div>
   `;
@@ -81,50 +87,57 @@ async function renderPost(container, params) {
   }
 
   document.querySelector('.like-btn').addEventListener('click', async (e) => {
-    const btn = e.target;
+    const btn = e.target.closest('.like-btn');
+    if (!btn) return;
     const isLiked = btn.dataset.liked === 'true';
     try {
       let result;
-      if (isLiked) {
-        result = await apiRequest(`/posts/${postId}/like`, { method: 'DELETE' });
-        btn.textContent = '♡'; btn.classList.remove('liked'); btn.dataset.liked = 'false';
-      } else {
-        result = await apiRequest(`/posts/${postId}/like`, { method: 'POST' });
-        btn.textContent = '♥'; btn.classList.add('liked'); btn.dataset.liked = 'true';
-      }
+        if (isLiked) {
+          result = await apiRequest(`/posts/${postId}/like`, { method: 'DELETE' });
+          btn.innerHTML = '<i class="fa-regular fa-heart"></i>'; btn.classList.remove('liked'); btn.dataset.liked = 'false';
+        } else {
+          result = await apiRequest(`/posts/${postId}/like`, { method: 'POST' });
+          btn.innerHTML = '<i class="fa-solid fa-heart"></i>'; btn.classList.add('liked'); btn.dataset.liked = 'true';
+        }
       document.getElementById('likesCount').textContent = `${result.likes_count} curtidas`;
     } catch (err) {
       console.error('Erro ao curtir', err);
     }
   });
 
+  const commentInput = document.getElementById('commentInput');
+  const commentSubmitBtn = document.getElementById('commentSubmitBtn');
+
+  commentInput.addEventListener('input', () => {
+    commentSubmitBtn.disabled = !commentInput.value.trim();
+  });
+
   document.getElementById('commentForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const input = document.getElementById('commentInput');
-    const submitBtn = document.getElementById('commentSubmitBtn');
-    const body = input.value.trim();
-    if (!body) return;
-    submitBtn.disabled = true;
+    const body = commentInput.value.trim();
+    if (!body || commentSubmitBtn.disabled) return;
+    commentSubmitBtn.disabled = true;
     try {
       await apiRequest(`/posts/${postId}/comments`, { method: 'POST', body: JSON.stringify({ body }) });
-      input.value = '';
+      commentInput.value = '';
+      commentSubmitBtn.disabled = true;
       await loadComments(post.user.id);
     } catch (err) {
       console.error('Erro ao comentar', err);
     } finally {
-      submitBtn.disabled = false;
+      commentSubmitBtn.disabled = !commentInput.value.trim();
     }
   });
 
   document.getElementById('commentsList').addEventListener('click', async (e) => {
-    if (e.target.classList.contains('comment-delete')) {
-      const commentId = e.target.dataset.commentId;
-      try {
-        await apiRequest(`/posts/${postId}/comments/${commentId}`, { method: 'DELETE' });
-        await loadComments(post.user.id);
-      } catch (err) {
-        console.error('Erro ao excluir comentário', err);
-      }
+    const btn = e.target.closest('.comment-delete');
+    if (!btn) return;
+    const commentId = btn.dataset.commentId;
+    try {
+      await apiRequest(`/posts/${postId}/comments/${commentId}`, { method: 'DELETE' });
+      await loadComments(post.user.id);
+    } catch (err) {
+      console.error('Erro ao excluir comentário', err);
     }
   });
 }
