@@ -59,6 +59,7 @@ async function handleRouteChange() {
   }
 
   contentEl.innerHTML = '';
+  contentEl.className = '';
   try {
     await match.handler(contentEl, match.params || {});
   } catch (err) {

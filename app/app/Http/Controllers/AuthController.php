@@ -13,25 +13,25 @@ class AuthController extends Controller
     public function __construct(protected AuthService $authService) {}
 
     #[OA\Post(
-        path: "/register",
-        summary: "Registrar novo usuário",
-        tags: ["Autenticação"],
+        path: '/register',
+        summary: 'Registrar novo usuário',
+        tags: ['Autenticação'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["name", "username", "email", "password", "password_confirmation"],
+                required: ['name', 'username', 'email', 'password', 'password_confirmation'],
                 properties: [
-                    new OA\Property(property: "name", type: "string", example: "Maria Silva"),
-                    new OA\Property(property: "username", type: "string", example: "mariasilva"),
-                    new OA\Property(property: "email", type: "string", example: "maria@teste.com"),
-                    new OA\Property(property: "password", type: "string", example: "senha123"),
-                    new OA\Property(property: "password_confirmation", type: "string", example: "senha123"),
+                    new OA\Property(property: 'name', type: 'string', example: 'Maria Silva'),
+                    new OA\Property(property: 'username', type: 'string', example: 'mariasilva'),
+                    new OA\Property(property: 'email', type: 'string', example: 'maria@teste.com'),
+                    new OA\Property(property: 'password', type: 'string', example: 'senha123'),
+                    new OA\Property(property: 'password_confirmation', type: 'string', example: 'senha123'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 201, description: "Usuário criado com sucesso"),
-            new OA\Response(response: 422, description: "Erro de validação"),
+            new OA\Response(response: 201, description: 'Usuário criado com sucesso'),
+            new OA\Response(response: 422, description: 'Erro de validação'),
         ]
     )]
     public function register(Request $request)
@@ -53,22 +53,22 @@ class AuthController extends Controller
     }
 
     #[OA\Post(
-        path: "/login",
-        summary: "Login",
-        tags: ["Autenticação"],
+        path: '/login',
+        summary: 'Login',
+        tags: ['Autenticação'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["email", "password"],
+                required: ['email', 'password'],
                 properties: [
-                    new OA\Property(property: "email", type: "string", example: "maria@teste.com"),
-                    new OA\Property(property: "password", type: "string", example: "senha123"),
+                    new OA\Property(property: 'email', type: 'string', example: 'maria@teste.com'),
+                    new OA\Property(property: 'password', type: 'string', example: 'senha123'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Login realizado com sucesso"),
-            new OA\Response(response: 401, description: "Credenciais inválidas"),
+            new OA\Response(response: 200, description: 'Login realizado com sucesso'),
+            new OA\Response(response: 401, description: 'Credenciais inválidas'),
         ]
     )]
     public function login(Request $request)
@@ -87,6 +87,16 @@ class AuthController extends Controller
         return response()->json($result);
     }
 
+    #[OA\Post(
+        path: '/logout',
+        summary: 'Fazer logout (revogar token)',
+        tags: ['Autenticação'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Logout realizado com sucesso'),
+            new OA\Response(response: 401, description: 'Não autenticado'),
+        ]
+    )]
     public function logout(Request $request)
     {
         $this->authService->logout($request->user());

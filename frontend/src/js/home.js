@@ -1,11 +1,25 @@
 async function renderHome(container) {
+  container.classList.add('home-content');
   container.innerHTML = `
-    <div id="storiesContainer"></div>
-    <div id="feed"></div>
-    <div id="loading" class="loading">Carregando...</div>
+    <div class="home-layout">
+      <div class="home-feed">
+        <div id="storiesContainer"></div>
+        <div id="feed"></div>
+        <div id="loading" class="loading">Carregando...</div>
+      </div>
+      <aside class="home-suggestions">
+        <div class="suggestions-card">
+          <div class="suggestions-header">
+            <span class="suggestions-title">Sugestões para você</span>
+          </div>
+          <div id="suggestionsList"></div>
+        </div>
+      </aside>
+    </div>
   `;
 
   await loadStoriesBar(document.getElementById('storiesContainer'));
+  await loadRecommendedUsers();
 
   let currentPage = 1;
   let isLoading = false;
@@ -120,4 +134,51 @@ async function renderHome(container) {
   });
 
   loadFeed();
+}
+
+async function loadRecommendedUsers() {
+  const listEl = document.getElementById('suggestionsList');
+  if (!listEl) return;
+
+  let users = [];
+  try {
+    users = await apiRequest('/users/recommended');
+  } catch (err) {
+    console.error('Erro ao carregar sugestões', err);
+    return;
+  }
+
+  if (!users.length) {
+    listEl.innerHTML = '<div class="suggestions-empty">Nenhuma sugestão por enquanto.</div>';
+    return;
+  }
+
+  listEl.innerHTML = users.map((user) => `
+    <div class="suggestion-item" data-user-id="${user.id}">
+      <a href="#/profile/${user.id}" class="suggestion-link">
+        <img class="suggestion-avatar" src="${user.avatar_path ? formatImageUrl(user.avatar_path) : defaultAvatar()}" alt="">
+        <div class="suggestion-info">
+          <span class="suggestion-username">${user.username}</span>
+          <span class="suggestion-name">${user.name}</span>
+        </div>
+      </a>
+      <button class="suggestion-follow" data-user-id="${user.id}">Seguir</button>
+    </div>
+  `).join('');
+
+  listEl.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.suggestion-follow');
+    if (!btn) return;
+
+    const userId = btn.dataset.userId;
+    try {
+      await apiRequest(`/users/${userId}/follow`, { method: 'POST' });
+      btn.closest('.suggestion-item').remove();
+      if (!listEl.querySelector('.suggestion-item')) {
+        listEl.innerHTML = '<div class="suggestions-empty">Nenhuma sugestão por enquanto.</div>';
+      }
+    } catch (err) {
+      console.error('Erro ao seguir usuário', err);
+    }
+  });
 }

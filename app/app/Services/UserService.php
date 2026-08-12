@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Like;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -58,7 +59,7 @@ class UserService
     {
         return User::when($search, function ($query) use ($search) {
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+                ->orWhere('username', 'like', "%{$search}%");
         })->paginate(20);
     }
 
@@ -71,5 +72,45 @@ class UserService
             ->inRandomOrder()
             ->limit($limit)
             ->get(['id', 'name', 'username', 'avatar_path']);
+    }
+
+    public function recommended(User $currentUser, int $limit = 5)
+    {
+        $followingIds = $currentUser->following()->pluck('users.id');
+        $relevantPostIds = $currentUser->likes()->pluck('post_id')
+            ->merge($currentUser->posts()->pluck('id'))
+            ->unique();
+
+        $candidateUserIds = Like::query()
+            ->whereIn('post_id', $relevantPostIds)
+            ->where('user_id', '!=', $currentUser->id)
+            ->whereNotIn('user_id', $followingIds)
+            ->pluck('user_id')
+            ->unique();
+
+        $recommended = collect();
+        if ($candidateUserIds->isNotEmpty()) {
+            $recommended = User::query()
+                ->whereIn('id', $candidateUserIds)
+                ->withCount(['likes' => function ($query) use ($relevantPostIds) {
+                    $query->whereIn('post_id', $relevantPostIds);
+                }])
+                ->orderByDesc('likes_count')
+                ->limit($limit)
+                ->get(['id', 'name', 'username', 'avatar_path']);
+        }
+
+        if ($recommended->count() < $limit) {
+            $recommended = $recommended->concat(
+                User::where('id', '!=', $currentUser->id)
+                    ->whereNotIn('id', $followingIds)
+                    ->whereNotIn('id', $recommended->pluck('id'))
+                    ->inRandomOrder()
+                    ->limit($limit - $recommended->count())
+                    ->get(['id', 'name', 'username', 'avatar_path'])
+            );
+        }
+
+        return $recommended;
     }
 }
