@@ -29,3 +29,9 @@ async function apiRequest(endpoint, options = {}) {
 
   return data;
 }
+
+function defaultAvatar() {
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23dbdbdb"/><circle cx="50" cy="38" r="18" fill="%23a8a8a8"/><ellipse cx="50" cy="85" rx="30" ry="22" fill="%23a8a8a8"/></svg>'
+  );
+}

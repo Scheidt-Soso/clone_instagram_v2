@@ -31,6 +31,11 @@ class StoryController extends Controller
         return response()->json($story, 201);
     }
 
+    public function mine(Request $request)
+    {
+        return response()->json($this->storyService->mine($request->user()));
+    }
+
     public function destroy(Request $request, Story $story)
     {
         if ($request->user()->id !== $story->user_id) {

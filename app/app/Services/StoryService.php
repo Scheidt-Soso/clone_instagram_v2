@@ -21,6 +21,15 @@ class StoryService
             ->groupBy('user_id');
     }
 
+    public function mine(User $user)
+    {
+        return $user->stories()
+            ->where('expires_at', '>', now())
+            ->with('user')
+            ->orderBy('created_at')
+            ->get();
+    }
+
     public function create(User $user, UploadedFile $media): Story
     {
         $path = $media->store('stories', 'public');

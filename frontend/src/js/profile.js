@@ -84,7 +84,7 @@ async function renderProfile(container, params) {
 
   container.innerHTML = `
     <div class="profile-header">
-      <img class="profile-avatar" src="${profile.avatar_path ? formatImageUrl(profile.avatar_path) : 'https://via.placeholder.com/90'}" alt="">
+      <img class="profile-avatar" src="${profile.avatar_path ? formatImageUrl(profile.avatar_path) : defaultAvatar()}" alt="">
       <div class="profile-info">
         <div class="profile-top-row">
           <span class="profile-username">${profile.username}</span>

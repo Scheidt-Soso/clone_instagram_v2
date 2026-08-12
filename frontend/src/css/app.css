@@ -139,6 +139,24 @@
   background: none; border: none; cursor: pointer;
 }
 
+.story-viewer-username {
+  position: absolute;
+  top: 20px; left: 30px;
+  color: #fff;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.story-viewer-zone {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 30%;
+  cursor: pointer;
+}
+
+.story-viewer-zone.left { left: 0; }
+.story-viewer-zone.right { right: 0; }
+
 @media (max-width: 700px) {
   .sidebar { width: 70px; padding: 24px 8px; }
   .sidebar-item span, .sidebar-logo { display: none; }

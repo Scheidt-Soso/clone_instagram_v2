@@ -22,7 +22,7 @@ async function renderHome(container) {
     card.className = 'post-card';
     card.innerHTML = `
       <div class="post-header">
-        <img class="post-avatar" src="${post.user.avatar_path ? formatImageUrl(post.user.avatar_path) : 'https://via.placeholder.com/32'}" alt="">
+        <img class="post-avatar" src="${post.user.avatar_path ? formatImageUrl(post.user.avatar_path) : defaultAvatar()}" alt="">
         <a href="#/profile/${post.user.id}" class="post-username">${post.user.username}</a>
       </div>
       <div class="post-image-wrapper">

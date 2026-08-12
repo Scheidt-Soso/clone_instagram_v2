@@ -27,7 +27,7 @@ async function renderEditProfile(container) {
   const submitBtn = document.getElementById('submitBtn');
 
   const profile = await apiRequest(`/users/${currentUser.id}`);
-  avatarPreview.src = profile.avatar_path ? formatImageUrl(profile.avatar_path) : 'https://via.placeholder.com/90';
+  avatarPreview.src = profile.avatar_path ? formatImageUrl(profile.avatar_path) : defaultAvatar();
   document.getElementById('name').value = profile.name;
   document.getElementById('username').value = profile.username;
   document.getElementById('bio').value = profile.bio || '';
